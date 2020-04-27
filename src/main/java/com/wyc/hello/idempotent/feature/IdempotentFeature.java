@@ -14,23 +14,4 @@ public interface IdempotentFeature {
      * @return
      */
     String idempotentKey();
-
-    default void hehe(Integer type, @IdempotentKey String key, String value) {
-        System.out.println();
-    }
-
-    public static void main(String[] args) {
-        IdempotentFeature feature = new IdempotentFeature() {
-            @Override
-            public String idempotentKey() {
-                return "www";
-            }
-            @Override
-            public void hehe(Integer type,@IdempotentKey String key, String value) {
-                System.out.println();
-            }
-        };
-
-        System.out.println();
-    }
 }

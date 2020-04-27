@@ -1,6 +1,6 @@
 package wyc.hello.idempotent.test;
 
-import com.wyc.hello.idempotent.Idempotent;
+import com.wyc.hello.idempotent.feature.Idempotent;
 import com.wyc.hello.idempotent.feature.IdempotentKey;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +39,7 @@ public class HelloController {
 	 * @param greeting2
 	 * @return
 	 */
-	@Idempotent
+	@Idempotent(timeout = 1000 * 60)
 	@RequestMapping("/haha")
 	public Greeting2 haha(@RequestBody Greeting2 greeting2) {
 		return greeting2;

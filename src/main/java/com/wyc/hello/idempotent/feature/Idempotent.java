@@ -1,4 +1,4 @@
-package com.wyc.hello.idempotent;
+package com.wyc.hello.idempotent.feature;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,4 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Idempotent {
+    // 幂等校验超时时间，默认3分钟
+    long timeout() default 1000 * 60 * 3;
 }

@@ -1,6 +1,5 @@
 package com.wyc.hello.idempotent.checker;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.concurrent.TimeUnit;
@@ -32,12 +31,9 @@ public class RedisIdempotentChecker implements IdempotentChecker {
     @Override
     public Object checkRepeat(String idempotentKey, String value, Long timeout) {
         String key = "idempotent:" + idempotentKey;
-        Boolean flag = redisTemplate.opsForValue().setIfAbsent(key, value);
+        Boolean flag = redisTemplate.opsForValue().setIfAbsent(key, value, timeout, TimeUnit.MILLISECONDS);
         if(Boolean.FALSE.equals(flag)) {
             return redisTemplate.opsForValue().get(key);
-        }
-        if(timeout > 0) {
-            redisTemplate.expire(key, timeout, TimeUnit.MILLISECONDS);
         }
         return null;
     }

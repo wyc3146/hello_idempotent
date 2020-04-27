@@ -1,10 +1,11 @@
 package com.wyc.hello.idempotent.aop;
 
-import com.wyc.hello.idempotent.Idempotent;
+import com.wyc.hello.idempotent.feature.Idempotent;
 import com.wyc.hello.idempotent.checker.IdempotentChecker;
 import com.wyc.hello.idempotent.exception.RepeatException;
 import com.wyc.hello.idempotent.feature.IdempotentFeature;
 import com.wyc.hello.idempotent.feature.IdempotentKey;
+import com.wyc.hello.idempotent.store.IdempotentBO;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -37,10 +38,11 @@ public class IdempotentAspect {
 
     @Around(value = "idempotentPointcut(idempotent)", argNames = "joinPoint,idempotent")
     public Object doAround(ProceedingJoinPoint joinPoint, Idempotent idempotent) throws Throwable {
+        Object returnValue = null;
 
         String idempotentKey = getIdempotentKey(joinPoint);
-        Object returnValue = null;
-        if(idempotentKey != null && checkRepeatKey(idempotentKey)) {
+        IdempotentBO idempotentBO = new IdempotentBO(idempotentKey, idempotent.timeout());
+        if(idempotentKey != null && checkRepeatKey(idempotentBO)) {
             throw new RepeatException();
         }
         // 获取不到幂等key，不进行幂等操作
@@ -50,11 +52,11 @@ public class IdempotentAspect {
 
     /**
      * 给定key，判断是否已经处理过
-     * @param idempotentKey 校验幂等的key
+     * @param idempotentBO 校验幂等的key
      * @return
      */
-    private boolean checkRepeatKey(String idempotentKey) {
-        Object checkResult = idempotentChecker.checkRepeat(idempotentKey);
+    private boolean checkRepeatKey(IdempotentBO idempotentBO) {
+        Object checkResult = idempotentChecker.checkRepeat(idempotentBO.getIdempotentKey(), idempotentBO.getTimeout());
         return checkResult != null;
     }
 

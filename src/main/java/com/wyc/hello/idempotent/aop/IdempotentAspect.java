@@ -66,18 +66,6 @@ public class IdempotentAspect {
             if(arg instanceof IdempotentFeature) {
                 return ((IdempotentFeature) arg).idempotentKey();
             }
-
-            for (Field field : arg.getClass().getDeclaredFields()) {
-                IdempotentKey idempotentKey = AnnotationUtils.findAnnotation(field, IdempotentKey.class);
-                if(idempotentKey != null) {
-                    try {
-                        field.setAccessible(true);
-                        return field.get(arg).toString();
-                    } catch (Exception e) {
-                        System.err.println("ddd");
-                    }
-                }
-            }
         }
 
         Method method = ((MethodSignature)(joinPoint.getSignature())).getMethod();
@@ -86,6 +74,19 @@ public class IdempotentAspect {
             IdempotentKey idempotentKey = AnnotationUtils.findAnnotation(parameter, IdempotentKey.class);
             if(idempotentKey != null) {
                 return args[i].toString();
+            }
+        }
+
+        for (Object arg : args) {
+            for (Field field : arg.getClass().getDeclaredFields()) {
+                IdempotentKey idempotentKey = AnnotationUtils.findAnnotation(field, IdempotentKey.class);
+                if(idempotentKey != null) {
+                    try {
+                        field.setAccessible(true);
+                        return field.get(arg).toString();
+                    } catch (Exception e) {
+                    }
+                }
             }
         }
 

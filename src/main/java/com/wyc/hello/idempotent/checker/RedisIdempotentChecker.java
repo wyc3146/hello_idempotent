@@ -30,7 +30,7 @@ public class RedisIdempotentChecker implements IdempotentChecker {
 
     @Override
     public Object checkRepeat(String idempotentKey, String value, Long timeout) {
-        String key = "idempotent:" + idempotentKey;
+        String key = "hello:idempotent:" + idempotentKey;
         Boolean flag = redisTemplate.opsForValue().setIfAbsent(key, value, timeout, TimeUnit.MILLISECONDS);
         if(Boolean.FALSE.equals(flag)) {
             return redisTemplate.opsForValue().get(key);
